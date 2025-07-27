@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurant Orders</title>
+    <style>
+        body {
+            display: flex;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            height: 100vh;
+            overflow: hidden;
+            background-color: #f9f9f9;
+        }
+        .sidebar {
+            width: 250px;
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: start;
+            border-right: 1px solid #ddd;
+        }
+        .sidebar a {
+            text-decoration: none;
+            color: white;
+            padding: 10px 0;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .sidebar a:hover {
+            background-color: #34495e;
+        }
+        .sidebar img {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+        }
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            margin: 0;
+            color: #2c3e50;
+        }
+        .order {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 20px;
+            margin-bottom: 20px;
+            background-color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .order-header h3 {
+            margin: 0;
+            color: #34495e;
+        }
+        .order-details {
+            margin-top: 10px;
+            color: #7f8c8d;
+        }
+        .order-details p {
+            margin: 5px 0;
+        }
+        .order-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+        .order-actions button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            margin-left: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        .order-actions button:hover {
+            background-color: white;
+            color: #007bff;
+            border: 2px solid #007bff;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <a th:href="@{/restaurants/dashboard}">Dashboard</a>
+        <a th:href="@{/restaurants/orders}"><img src="/images/history.png" alt="Order History Icon">Your Orders</a>
+        <a th:href="@{/reports}"><img src="/images/analysis.png" alt="Reports Icon"> Reports</a>
+        <a th:href="@{/profile}"><img src="/images/rest.png" alt="Profile Icon"> Profile</a>
+        <a th:href="@{/logout}"><img src="/images/logout.jpeg" alt="Logout Icon"> Logout</a>
+    </div>
+
+    <div class="main-content">
+        <div class="header">
+            <h1>Order Dashboard</h1>
+        </div>
+
+        <div th:each="order : ${orders}" class="order">
+            <div class="order-header">
+                <h3>Order #<span th:text="${order.id}"></span></h3>
+                <span>Date: <span th:text="${order.orderDate}"></span></span>
+            </div>
+            <div class="order-details">
+                <p>Customer: <span th:text="${order.customer.firstName} + ${order.customer.lastname}"></span></p>
+                <p>Total Items: <span th:text="${order.filteredOrderItems(restaurantId).size()}"></span></p>
+                <!--<p>Total Price: ₹<span th:text="${order.totalAmount}"></span></p>-->
+                <ul>
+                    <li th:each="item : ${order.filteredOrderItems(restaurantId)}">
+                        <span th:text="${item.restaurantItem.item.name}"></span> - ₹<span th:text="${item.restaurantItem.cost}"></span> - <span th:text="${item.quantity}"></span> Packs
+                    </li>
+                </ul>
+				<p>MobileNo: <span th:text="${order.customer.mobileNumber}"></span></p>
+				<p>Address: <span th:text="${order.customer.address.toString()}"></span></p>
+            </div>
+			<div class="order-actions">
+			    <!-- If all order items are delivered, show 'Order Completed' -->
+			    <th:block th:if="${#lists.isEmpty(order.filteredOrderItems(restaurantId).?[status != 'Completed'])}">
+			        <span style="color: green; font-weight: bold;">Order Completed</span>
+			    </th:block>
+
+			    <!-- Otherwise, show the 'Mark as Completed' button -->
+			    <th:block th:unless="${#lists.isEmpty(order.filteredOrderItems(restaurantId).?[status != 'Completed'])}">
+			        <button onclick="markOrderAsCompleted(this)" 
+			                th:data-id="${order.id}" 
+			                th:data-orderItems="${#strings.arrayJoin(order.filteredOrderItems(restaurantId).![id], ',')}">
+			            Mark as Completed
+			        </button>
+			    </th:block>
+			</div>
+        </div>
+    </div>
+
+    <script>
+		async function markOrderAsCompleted(button) {
+		    const orderId = button.getAttribute('data-id');
+		    const orderItems = button.getAttribute('data-orderItems').split(','); // Convert CSV to array
+
+		    const confirmed = confirm('Mark this order as completed?');
+		    if (confirmed) {
+		        try {
+		            const response = await fetch('/orders/complete', {
+		                method: 'POST',
+		                headers: {
+		                    'Content-Type': 'application/json'
+		                },
+		                body: JSON.stringify(orderItems) // Send order item IDs as JSON array
+		            });
+
+		            if (response.ok) {
+		                alert('Order marked as completed successfully.');
+		                window.location.reload();
+		            } else {
+		                alert('Failed to mark the order as completed.');
+		            }
+		        } catch (error) {
+		            console.error('Error:', error);
+		            alert('An error occurred while marking the order as completed.');
+		        }
+		    }
+		}
+
+        function viewOrderDetails(button) {
+            const orderId = button.getAttribute('data-id');
+            window.location.href = `/orders/details/${orderId}`;
+        }
+    </script>
+</body>
+</html>

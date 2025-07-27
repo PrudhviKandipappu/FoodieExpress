@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Customer Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+
+        /* Cart badge styling */
+        .cart-count {
+            position: absolute; top: -5px; right: -5px;
+            background-color: red; color: white; font-size: 7px;
+            font-weight: bold; border-radius: 50%; padding: 4px 8px;
+        }
+
+        /* Gradient background */
+        body {
+            background: linear-gradient(135deg, #ffcc99, #ff99cc);
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100 min-h-screen">
+    <!-- Header Section -->
+    <header class="bg-white shadow-md p-6 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+            <img src="/images/logo.jpg" alt="App Logo" class="h-12">
+            <h1 class="text-3xl font-bold text-gray-800">
+                Welcome, <span th:text="${customerName}" class="text-blue-600">Customer</span>
+            </h1>
+        </div>
+
+        <nav>
+            <ul class="flex space-x-6">
+                <li><a href="/customers/orders" class="hover:text-blue-500">View Orders</a></li>
+                <li><a href="/customers/profile" class="hover:text-blue-500">Profile</a></li>
+                <li class="relative">
+                    <a href="/customer/cart" class="hover:text-blue-500 flex items-center" aria-label="Cart">
+                        <img src="https://img.icons8.com/material-outlined/24/000000/shopping-cart.png" alt="Cart">
+                        <span class="cart-count" id="cart-count" th:text="${cartItemCount}"></span>
+                    </a>
+                </li>
+                <li><a href="/logout" class="hover:text-red-500">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Main Section -->
+    <main class="container mx-auto p-6">
+        <!-- Search Bar -->
+        <form action="#" class="flex justify-center mb-6">
+            <input type="text" placeholder="What do you want to eat today?" 
+                   class="w-1/2 p-2 border border-gray-300 rounded-md" aria-label="Search">
+        </form>
+
+        <!-- Category Dropdown -->
+        <div class="mb-6">
+            <label for="category-select" class="text-xl font-semibold">Select a Category:</label>
+            <select id="category-select" class="ml-4 p-2 border rounded-md" onchange="filterDishes(this.value)" aria-label="Category Selector">
+                <option value="All">All</option>
+                <option th:each="category : ${categories}" 
+                        th:value="${category.name}" 
+                        th:text="${category.name}"></option>
+            </select>
+        </div>
+
+        <!-- Dish Display -->
+        <div id="dish-container" class="grid grid-cols-4 gap-6">
+            <div th:each="dish : ${dishes}" class="bg-white rounded-md p-4 text-center" 
+                 th:attr="data-category=${dish.category.name}, data-itemId=${dish.item.id}, data-restaurantId=${dish.restaurant.id}, data-price=${dish.price}">
+                <img th:src="@{${dish.imagePath}}" alt="Dish Image" class="w-full h-32 object-cover rounded-md">
+                <div class="mt-2">
+                    <p>Name: <span th:text="${dish.item.name}"></span></p>
+                    <p>Category: <span th:text="${dish.category.name}"></span></p>
+                    <p>Cost: <span th:text="${dish.price}"></span></p>
+                    <p>Restaurant: <span th:text="${dish.restaurant.name}"></span></p>
+                </div>
+                <button class="mt-4 bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600" 
+                        th:attr="onclick=|addToCart('${dish.item.id}', '${dish.item.name}')|">
+                    Add to Cart
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Function to dynamically update dish list based on selected category
+        function filterDishes(category) {
+            const dishCards = document.querySelectorAll("#dish-container > div");
+            dishCards.forEach(card => {
+                const dishCategory = card.getAttribute("data-category");
+                card.style.display = category === "All" || dishCategory === category ? "block" : "none";
+            });
+        }
+
+        // Function to handle adding items to cart
+        async function addToCart(itemId, itemName) {
+            const dishDiv = document.querySelector(`[data-itemId="${itemId}"]`);
+            const category = dishDiv.dataset.category;
+            const restaurantId = dishDiv.dataset.restaurantid;
+            const price = dishDiv.dataset.price;
+
+            console.log({ category, itemId, restaurantId, price });
+
+            const tempFormData = new FormData();
+            tempFormData.append("restaurantId", restaurantId);
+            tempFormData.append("itemId", itemId);
+            tempFormData.append("price", price);
+
+            try {
+                const response = await fetch("/cart/addItem", {
+                    method: "POST",
+                    body: tempFormData,
+                });
+
+                if (response.ok) {
+                    alert(`${itemName} added to cart!`);
+                    const cartCountElem = document.getElementById('cart-count');
+                    const cartCount = parseInt(cartCountElem.textContent) + 1;
+                    cartCountElem.textContent = cartCount;
+                } else if (response.status === 409) {
+                    const error = await response.text();
+                    alert(`Error: ${error}`); // Display conflict message
+                } else {
+                    const error = await response.text();
+                    alert(`Error: ${error}`); // Display general failure message
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                alert("An error occurred while adding the item to the cart. Please try again later.");
+            }
+        }
+    </script>
+</body>
+</html>

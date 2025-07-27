@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurant Registration</title>
+    <link rel="stylesheet" href="/styles/restaurantSignUp.css">
+</head>
+<body>
+    <div class="container">
+        <div class="form-section">
+            <div class="logo-container">
+                <img src="/images/logo.jpg" alt="Food Express Logo">
+            </div>
+            <h1>Restaurant Registration</h1>
+            <form id="restaurantForm" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="name">Restaurant Name</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="manager">Manager</label>
+                    <input type="text" id="manager" name="manager" required>
+                </div>
+                <div class="form-group">
+                    <label for="mobileNumber">Mobile Number</label>
+                    <input type="tel" id="mobileNumber" name="mobileNumber" required>
+                </div>
+                <h3>Address</h3>
+                <div class="row">
+                    <div class="form-group">
+                        <label for="buildingName">Building Name</label>
+                        <input type="text" id="buildingName" name="address.buildingName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="streetNumber">Street Number</label>
+                        <input type="text" id="streetNumber" name="address.streetNo" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group">
+                        <label for="area">Area</label>
+                        <input type="text" id="area" name="address.area" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="city">City</label>
+                        <input type="text" id="city" name="address.city" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group">
+                        <label for="state">State</label>
+                        <input type="text" id="state" name="address.state" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="country">Country</label>
+                        <input type="text" id="country" name="address.country" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="pinCode">Pincode</label>
+                    <input type="text" id="pinCode" name="address.pinCode" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <h3>Menu Items</h3>
+                <div id="menuItems">
+                    <div class="menu-item">
+                        <div class="form-group">
+                            <label for="itemName0">Item Name</label>
+                            <input type="text" id="itemName0" name="restaurantItems[0].item.name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="itemCategory0">Category</label>
+                            <input type="text" id="itemCategory0" name="restaurantItems[0].item.category.name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="itemCost0">Cost</label>
+                            <input type="number" id="itemCost0" name="restaurantItems[0].cost" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="itemQuantity0">Quantity</label>
+                            <input type="number" id="itemQuantity0" name="restaurantItems[0].quantity" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="itemImage0">Image</label>
+                            <input type="file" class="itemImages" name="itemImages[0]" required>
+                        </div>
+                        <button type="button" class="remove-menu-item">Remove Item</button>
+                    </div>
+                </div>
+                <button type="button" id="addMenuItem">Add More Item</button>
+                <button type="submit">Register Restaurant</button>
+            </form>
+        </div>
+        <div class="image-section"></div>
+    </div>
+    <script src="/scripts/restaurantSignUp.js"></script>
+</body>
+</html>

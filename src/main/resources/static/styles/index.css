@@ -1,0 +1,139 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+.header {
+    background: #fff;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.header img {
+    height: 50px;
+}
+.header nav {
+    display: flex;
+    gap: 15px;
+}
+.header nav a {
+    text-decoration: none;
+    color: #000;
+    font-weight: bold;
+}
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+.dropdown-toggle {
+    cursor: pointer;
+    text-decoration: none;
+    color: #000;
+    font-weight: bold;
+}
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    left: 0;
+    top: 100%; /* Ensures the dropdown appears below the toggle */
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 10px 0;
+    z-index: 1000;
+    width: 220px; /* Increased width for clarity */
+}
+.dropdown-menu a {
+    display: block;
+    padding: 10px 15px;
+    text-decoration: none;
+    color: #000;
+    font-size: 14px;
+}
+.dropdown-menu a:hover {
+    background-color: #f9f9f9;
+}
+.dropdown:hover .dropdown-menu {
+    display: block;
+}
+.hero {
+    position: relative;
+    text-align: left;
+    color: white;
+    overflow: hidden;
+}
+.hero img {
+    width: 100%;
+    max-height: 500px;
+    object-fit: cover;
+}
+.hero-text {
+    position: absolute;
+    top: 50%;
+    left: 20px;
+    transform: translateY(-50%);
+    color: black;
+}
+.hero-text h1 {
+    font-family: 'Georgia', serif;
+    font-size: 3em;
+    margin: 0 0 10px 0;
+}
+.hero-text p {
+    font-size: 1.5em;
+    margin: 0;
+}
+.explore {
+    padding: 20px;
+    text-align: center;
+}
+.explore h2 {
+    margin-bottom: 20px;
+}
+.explore-options {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+.explore-options div {
+    background: #f9f9f9;
+    padding: 20px;
+    width: 200px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.footer {
+    background: #f3f3f3;
+    padding: 20px;
+    text-align: left;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+.footer div {
+    margin-bottom: 10px;
+}
+.footer a {
+    color: black;
+    text-decoration: none;
+}
+.footer .column {
+    margin-right: 20px;
+}
+.social-links {
+    display: flex;
+    gap: 10px;
+}
+.social-links a {
+    margin: 0 10px;
+    color: black;
+}
+.social-links img {
+    height: 20px;
+    width: 20px;
+}
+.copyright {
+    text-align: center;
+    padding: 10px;
+    background: #eaeaea;
+}

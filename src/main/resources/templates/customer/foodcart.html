@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Cart Page</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+
+        /* Gradient background */
+        body {
+            background: linear-gradient(135deg, #ffcc99, #ff99cc);
+        }
+        
+        /* Cart item styling */
+        .cart-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .cart-item img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .cart-item-details {
+            flex-grow: 1;
+            margin-left: 1rem;
+        }
+
+        .cart-summary {
+            background-color: #ffffff;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .cart-summary .total {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: #374151;
+        }
+
+        .cart-summary button {
+            background-color: #2563eb;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .cart-summary button:hover {
+            background-color: #1d4ed8;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <!-- Header Section -->
+    <header class="bg-white shadow-md p-6 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+            <img src="/images/logo.jpg" alt="App Logo" class="h-12">
+            <h1 class="text-3xl font-bold text-gray-800">Your Cart</h1>
+        </div>
+        <nav>
+            <ul class="flex space-x-6">
+                <li><a href="/customers/dashboard" class="hover:text-blue-500">Dashboard</a></li>
+                <li><a href="/customer/profile" class="hover:text-blue-500">Profile</a></li>
+                <li><a href="/logout" class="hover:text-red-500">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Main Section -->
+    <main class="container mx-auto p-6">
+        <!-- Cart Items -->
+        <div class="bg-white shadow-md rounded-md p-6 mb-6">
+            <h2 class="text-xl font-bold mb-4">Items in Your Cart</h2>
+            <div th:each="item : ${cart.cartItems}" class="cart-item" th:attr="data-cartItemId=${item.id}">
+                <img th:src="@{${item.restaurantItem.imagePath}}" alt="Dish Image">
+                <div class="cart-item-details">
+                    <h3 th:text="${item.restaurantItem.item.name}" class="text-lg font-semibold"></h3>
+                    <p th:text="'Price: ₹' + ${item.restaurantItem.cost}" class="text-gray-600"></p>
+                    <p th:text="'Quantity: ' + ${item.quantity}" class="text-gray-600"></p>
+                </div>
+                <button class="text-red-500 hover:text-red-700" th:attr="onclick=|removeItem(${item.id})|">Remove</button>
+            </div>
+        </div>
+
+        <!-- Cart Summary -->
+        <div class="cart-summary">
+            <h3 class="text-xl font-bold mb-4">Cart Summary</h3>
+            <p class="total" th:text="'Total: ₹' + ${cart.totalItemsCost}"></p>
+            <button th:attr="onclick=|checkout(${cart.id})|">Proceed to Checkout</button>
+        </div>
+    </main>
+
+    <script>
+        // Function to handle item removal		
+		async function removeItem(cartItemId) {
+		    if (!confirm("Are you sure you want to remove this item?")) {
+		        return;
+		    }
+
+		    try {
+		        const response = await fetch(`/cart/removeItem?cartItemId=${cartItemId}`, {
+		            method: "POST",
+		        });
+
+		        if (response.ok) {
+		            alert("Item removed from cart!");
+					window.location.reload();
+		            // Update cart count logic...
+		        } else {
+		            const error = await response.text();
+		            alert(`Error: ${error}`);
+		        }
+		    } catch (error) {
+		        console.error("Error:", error);
+		        alert("An error occurred while removing the item.");
+		    }
+		}
+		
+        // Mock checkout function
+        async function checkout(cartId) {
+            alert("Proceeding to checkout...");
+			
+			try {
+		        const response = await fetch(`/cart/checkout?cartId=${cartId}`, {
+		            method: "POST",
+		        });
+
+		        if (response.ok) {
+		            alert("Your Order Placed Successfully!!");
+					window.location.reload();
+		            // Update cart count logic...
+		        } else {
+		            const error = await response.text();
+		            alert(`Error: ${error}`);
+		        }
+		    } catch (error) {
+		        console.error("Error:", error);
+		        alert("An error occurred while removing the item.");
+		    }
+        }
+    </script>
+</body>
+</html>

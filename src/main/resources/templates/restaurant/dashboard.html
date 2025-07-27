@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu Management Dashboard</title>
+    <style>
+        body {
+            display: flex;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            height: 100vh;
+            overflow: hidden;
+            background-color: #f9f9f9;
+        }
+        .sidebar {
+            width: 250px;
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: start;
+            border-right: 1px solid #ddd;
+        }
+        .sidebar a {
+            text-decoration: none;
+            color: white;
+            padding: 10px 0;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .sidebar a:hover {
+            background-color: #34495e;
+        }
+        .sidebar img {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+        }
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            margin: 0;
+            color: #2c3e50;
+        }
+        .header button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        .header button:hover {
+            background-color: white;
+            color: #007bff;
+            border: 2px solid #007bff;
+        }
+        .food-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .food-item img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            margin-right: 20px;
+            border-radius: 5px;
+        }
+        .food-item-details {
+            flex: 1;
+        }
+        .food-item-details h3 {
+            margin: 0 0 10px 0;
+            color: #34495e;
+        }
+        .food-item-details p {
+            margin: 5px 0;
+            color: #7f8c8d;
+        }
+        .food-item button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            margin-right: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        .food-item button:hover {
+            background-color: white;
+            color: #007bff;
+            border: 2px solid #007bff;
+        }
+        .add-item-form {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            background-color: white;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .add-item-form input, .add-item-form select {
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            width: 100%;
+            font-size: 16px;
+            background-color: #f4f4f4;
+        }
+        .add-item-form input:focus, .add-item-form select:focus {
+            outline: none;
+            border-color: #007bff;
+            background-color: white;
+        }
+        .add-item-form button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        .add-item-form button:hover {
+            background-color: white;
+            color: #007bff;
+            border: 2px solid #007bff;
+        }
+
+        /* Modal styles */
+        .modal {
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            width: 100%;
+            max-width: 400px;
+            text-align: left;
+            position: relative;
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+        }
+        .modal-content .close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #333;
+        }
+        .modal-content label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #34495e;
+        }
+        .modal-content input {
+            margin-bottom: 15px;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            width: 100%;
+            font-size: 16px;
+            background-color: #f4f4f4;
+            box-sizing: border-box;
+        }
+        .modal-content input:focus {
+            outline: none;
+            border-color: #007bff;
+            background-color: white;
+        }
+        .modal-content button {
+            padding: 12px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            margin-right: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        .modal-content button:hover {
+            background-color: white;
+            color: #007bff;
+            border: 2px solid #007bff;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <a th:href="@{/menu-management}">Menu Management</a>
+        <a th:href="@{/restaurants/orders}"><img src="/images/history.png" alt="Order History Icon">Your Orders</a>
+        <a th:href="@{/reports}"><img src="/images/analysis.png" alt="Reports Icon"> Reports</a>
+        <a th:href="@{/profile}"><img src="/images/rest.png" alt="Profile Icon"> Profile</a>
+		<a th:href="@{/logout}"><img src="/images/logout.jpeg" alt="Logout Icon"> Logout</a>
+    </div>
+    <div class="main-content">
+        <div class="header">
+            <h1>Dashboard</h1>
+            <button onclick="toggleAddItemForm()">Add Item</button>
+        </div>
+
+        <!-- Add Item Form -->
+        <div class="add-item-form" id="addItemForm">
+            <form id="addForm" enctype="multipart/form-data">
+				<input type="hidden" name="restaurantId" th:value="${restaurantId}">
+                <input type="text" name="name" placeholder="Item Name" required>
+                <input type="text" name="category" placeholder="Category (e.g., Salad, Beverage)" required>
+                <input type="number" name="price" placeholder="Price" required>
+                <input type="file" name="image" accept="image/*" required>
+                <button type="submit">Add</button>
+            </form>
+        </div>
+
+        <!-- Food Items List -->
+        <div id="foodItems">
+            <div class="food-item" th:each="entry : ${menuItems}">
+                <img th:src="${entry.imagePath}" th:alt="${entry.item.name}">
+                <div class="food-item-details">
+                    <h3 th:text="${entry.item.name}"></h3>
+                    <p>Category: <span th:text="${entry.item.category.name}"></span></p>
+                    <p>Price: ₹<span th:text="${entry.cost}"></span></p>
+                    <div class="item-data" style="display:none;" th:id="'item-' + ${entry.item.id}" 
+                        th:data-id="${entry.item.id}" th:data-name="${entry.item.name}"
+						th:restaurant-id="${entry.restaurant.id}" 
+                        th:data-category="${entry.item.category.name}" 
+                        th:data-price="${entry.cost}" th:data-image-url="${entry.imagePath}"></div>
+                </div>
+                <button onclick="openUpdateModal(this)" th:data-id="${entry.item.id}">Update</button>
+				<button onclick="removeMenuItem(this)" th:data-item-id="${entry.item.id}">Remove</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Update -->
+    <div id="updateModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close" onclick="closeUpdateModal()">&times;</span>
+            <form id="updateForm" enctype="multipart/form-data">
+				<input type="hidden" name="restaurantId" id="restaurantId">
+                <input type="hidden" name="id" id="updateId">
+                <label>Name: </label><input type="text" name="name" id="updateName" required><br>
+                <label>Category: </label><input type="text" name="category" id="updateCategory" required><br>
+                <label>Price: </label><input type="number" name="price" id="updatePrice" required><br>
+                <label>Image: </label><input type="file" name="image" id="updateImage" accept="image/*"><br>
+                <img id="currentImage" src="" alt="Current Image" style="width: 100px; height: 100px; object-fit: cover; border-radius: 5px; display: none;">
+                <button type="submit">Save</button>
+                <button type="button" onclick="closeUpdateModal()">Cancel</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let currentFoodItem = null;
+
+        function toggleAddItemForm() {
+            const form = document.getElementById('addItemForm');
+            form.style.display = form.style.display === 'flex' ? 'none' : 'flex';
+        }
+
+        function openUpdateModal(button) {
+            const itemId = button.getAttribute('data-id');
+            const itemDataDiv = document.getElementById(`item-${itemId}`);
+            
+			document.getElementById('restaurantId').value = itemDataDiv.getAttribute('restaurant-id');
+            document.getElementById('updateId').value = itemDataDiv.getAttribute('data-id');
+            document.getElementById('updateName').value = itemDataDiv.getAttribute('data-name');
+            document.getElementById('updateCategory').value = itemDataDiv.getAttribute('data-category');
+            document.getElementById('updatePrice').value = itemDataDiv.getAttribute('data-price');
+            
+            const currentImage = document.getElementById('currentImage');
+            currentImage.src = itemDataDiv.getAttribute('data-image-url');
+            currentImage.style.display = 'block';
+
+            document.getElementById('updateModal').style.display = 'flex';
+        }
+
+        function closeUpdateModal() {
+            document.getElementById('updateModal').style.display = 'none';
+        }
+		
+		document.getElementById('updateImage').addEventListener('change', function(event) {
+		    const file = event.target.files[0]; // Get the selected file
+		    const currentImage = document.getElementById('currentImage');
+
+		    if (file) {
+		        const reader = new FileReader();
+
+		        // Load the selected file as a data URL
+		        reader.onload = function(e) {
+		            currentImage.src = e.target.result; // Set the src to the data URL
+		            currentImage.style.display = "block"; // Make the image visible
+		        };
+
+		        reader.readAsDataURL(file); // Read the file
+		    } else {
+		        // Hide the image preview if no file is selected
+		        currentImage.style.display = "none";
+		        currentImage.src = ""; // Clear the src
+		    }
+		});
+		
+		document.getElementById('updateForm').addEventListener('submit', updateMenuItem);
+		
+		async function updateMenuItem(event) {
+		    event.preventDefault(); // Prevent the default form submission
+
+		    const form = document.getElementById("updateForm");
+		    const formData = new FormData(form);
+
+		    try {
+		        const response = await fetch("/items/update", {
+		            method: "POST",
+		            body: formData,
+		        });
+
+		        if (response.ok) {
+		            const message = await response.text();
+		            alert(message); // Display success message
+
+		            window.location.reload();
+		        } else if (response.status === 409) {
+		            const error = await response.text();
+		            alert(`Error: ${error}`); // Display conflict message
+		        } else {
+		            const error = await response.text();
+		            alert(`Error: ${error}`); // Display general failure message
+		        }
+		    } catch (error) {
+		        console.error("Error:", error);
+		        alert("An error occurred while processing the registration. Please try again later.");
+		    }
+		}
+		
+		document.getElementById('addForm').addEventListener('submit', addMenuItem);
+				
+		async function addMenuItem(event) {
+		    event.preventDefault(); // Prevent the default form submission
+
+		    const form = document.getElementById("addForm");
+		    const formData = new FormData(form);
+
+		    try {
+		        const response = await fetch("/items/add", {
+		            method: "POST",
+		            body: formData,
+		        });
+
+		        if (response.ok) {
+		            const message = await response.text();
+		            alert(message); // Display success message
+
+		            window.location.reload();
+		        } else if (response.status === 409) {
+		            const error = await response.text();
+		            alert(`Error: ${error}`); // Display conflict message
+		        } else {
+		            const error = await response.text();
+		            alert(`Error: ${error}`); // Display general failure message
+		        }
+		    } catch (error) {
+		        console.error("Error:", error);
+		        alert("An error occurred while processing the registration. Please try again later.");
+		    }
+		}
+		
+		async function removeMenuItem(buttonElement) {
+		    const itemId = Number(buttonElement.dataset.itemId);
+			console.log(typeof itemId);
+			const userConfirmed = confirm("Are you sure you want to remove this item?");
+			
+			if (userConfirmed) {
+				try {
+			        const response = await fetch(`/items/delete/${itemId}`, {
+			            method: "DELETE",
+			        });
+
+			        if (response.ok) {
+			            const message = await response.text();
+			            alert(message); // Display success message
+
+			            window.location.reload();
+			        } else if (response.status === 409) {
+			            const error = await response.text();
+			            alert(`Error: ${error}`); // Display conflict message
+			        } else {
+			            const error = await response.text();
+			            alert(`Error: ${error}`); // Display general failure message
+			        }
+			    } catch (error) {
+			        console.error("Error:", error);
+			        alert("An error occurred while processing the registration. Please try again later.");
+			    }
+			}
+		}
+    </script>
+</body>
+</html>

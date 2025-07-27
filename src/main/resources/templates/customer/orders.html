@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Customer Orders</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <!-- Header Section -->
+    <header class="bg-white shadow-md p-6 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+            <img src="/images/logo.jpg" alt="App Logo" class="h-12">
+            <h1 class="text-3xl font-bold text-gray-800">
+                Your Orders
+            </h1>
+        </div>
+        <nav>
+            <ul class="flex space-x-6">
+                <li><a href="/customers/dashboard" class="hover:text-blue-500">Dashboard</a></li>
+                <li><a href="/customers/profile" class="hover:text-blue-500">Profile</a></li>
+                <li><a href="/logout" class="hover:text-red-500">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Main Section -->
+    <main class="container mx-auto p-6">
+        <!-- Orders List -->
+        <div>
+            <h2 class="text-xl font-semibold text-gray-700 mb-4">Order History</h2>
+            <div class="grid grid-cols-1 gap-6">
+                <!-- Order Card -->
+                <div th:each="order : ${orders}" class="bg-white shadow-md rounded-lg p-4">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h3 class="text-lg font-bold text-gray-800">
+                                Order #<span th:text="${order.id}"></span>
+                            </h3>
+                            <p class="text-gray-600">Date: <span th:text="${order.orderDate}"></span></p>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <p class="text-gray-700 font-medium">Items:</p>
+                        <ul class="list-disc list-inside">
+                            <li th:each="item : ${order.orderItems}" class="text-gray-600">
+                                <span th:text="${item.restaurantItem.item.name}"></span> - ₹<span th:text="${item.restaurantItem.cost}"></span> - <span th:text="${item.quantity}"></span> Packs <p> Status: <span class="text-sm text-green-700" th:text="${item.status}"></span></p>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="mt-4 flex justify-between items-center">
+                        <p class="text-gray-800 font-bold">
+                            Total Price: ₹<span th:text="${order.totalAmount}"></span>
+                        </p>
+						<div class="flex space-x-4">
+							<button class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600" th:attr="onclick=|getInvoice('${order.id}')|">
+								Get Invoice
+							</button>
+						    <!-- Show "Order Completed" if status is 'Completed' -->
+						    <th:block th:if="${order.status == 'Completed'}">
+						        <span style="color: green; font-weight: bold;">Order Completed</span>
+						    </th:block>
+
+						    <!-- Show "Cancel Order" button if order is NOT completed -->
+						    <th:block th:if="${order.status != 'Completed'}">
+						        <button class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600"
+						                th:attr="onclick=|cancelOrder('${order.id}')|">
+						            Cancel Order
+						        </button>
+						    </th:block>
+						</div>
+                    </div>
+                </div>
+                <!-- End of Order Card -->
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Function to cancel an order
+        async function cancelOrder(orderId) {
+            const confirmed = confirm('Are you sure you want to cancel this order?');
+            if (confirmed) {
+                try {
+                    const response = await fetch(`/customers/orders/cancel?orderId=${orderId}`, {
+                        method: 'POST',
+                    });
+                    if (response.ok) {
+                        alert('Order cancelled successfully.');
+                        window.location.reload();
+                    } else {
+                        alert('Failed to cancel the order.');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('An error occurred while cancelling the order.');
+                }
+            }
+        }
+		
+		async function getInvoice(orderId) {
+            try {
+                const response = await fetch(`/invoice/generate/${orderId}`, {
+                    method: 'GET',
+                });
+                if (response.ok) {
+					const blob = await response.blob();
+					const link = document.createElement('a');
+					const url = window.URL.createObjectURL(blob);
+					link.href = url;
+					link.download = `invoice_${orderId}.pdf`;  // Name the file as per the orderId or any other logic
+					link.click();
+					window.URL.revokeObjectURL(url);
+                } else {
+                    alert('Failed to get the invoice.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred while getting the invoice.');
+            }
+        }
+    </script>
+</body>
+</html>

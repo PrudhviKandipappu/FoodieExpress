@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ 	<meta charset="UTF-8">
+  	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  	<title>Food Express Signup</title>
+	<link rel="stylesheet" href="/styles/customerSignUp.css">
+</head>
+<body>
+  <div class="container">
+    <div class="form-section">
+      <img src="/images/logo.jpg" alt="Food Express Logo" class="logo">
+      <h1>Get Started Now</h1> <!-- Heading moved to a new line -->
+      <form>
+        <div class="row">
+          <input type="text" placeholder="First Name" id="firstName" required>
+          <input type="text" placeholder="Last Name" id="lastName" required>
+        </div>
+        <div class="row">
+          <input type="text" placeholder="Age" id="age" required>
+          <input type="text" placeholder="Gender" id="gender" required>
+        </div>
+        <div class="row">
+          <input type="email" placeholder="Email Address" id="email" required>
+          <input type="text" placeholder="Mobile Number" id="mobileNumber" required>
+        </div>
+        <!-- Address Fields -->
+        <div class="row">
+          <input type="text" placeholder="Building Name" id="buildingName" required>
+          <input type="text" placeholder="Street Number" id="streetNo" required>
+        </div>
+        <div class="row">
+          <input type="text" placeholder="Area" id="area" required>
+          <input type="text" placeholder="City" id="city" required>
+        </div>
+        <div class="row">
+          <input type="text" placeholder="State" id="state" required>
+          <input type="text" placeholder="Country" id="country" required>
+        </div>
+        <div class="row">
+          <input type="text" placeholder="Pincode" id="pincode" required>
+        </div>
+        <div class="row">
+          <input type="text" placeholder="Password" id="password" required>
+        </div>
+        <label>
+          <p><input type="checkbox" required> I agree to the terms & policy</p> 
+        </label>
+        <button type="submit">Signup</button>
+      </form>
+      <p>Have an account? <a href="/login">Sign In</a></p>
+    </div>
+    <div class="image-section"></div>
+  </div>
+  <script src="/scripts/customerSignUp.js"></script>
+</body>
+</html>

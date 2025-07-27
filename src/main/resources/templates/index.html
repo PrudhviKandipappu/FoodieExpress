@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<link>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FoodExpress</title>
+	<link rel="stylesheet" href="/styles/index.css">
+</head>
+<body>
+	<div class="header">
+	    <img src="/images/logo.jpg" alt="FoodExpress Logo">
+	    <nav>
+	        <a href="#">Search</a>
+	        <a href="#">Cart</a>
+	
+	        <div class="dropdown">
+	            <a href="#" class="dropdown-toggle">Sign Up</a>
+	            <div class="dropdown-menu">
+	                <a href="/signup/restaurant">Restaurant Sign Up</a>
+	                <a href="/signup/customer">Customer Sign Up</a>
+	            </div>
+	        </div>
+	        <a href="/login">Sign In</a>
+	    </nav>
+	</div>
+	
+	<div th:if="${param.message}"> 
+		<p th:text="${param.message}"></p> 
+	</div>
+	
+	<div class="hero">
+	    <img src="/images/background.jpg" alt="Delicious food">
+	    <div class="hero-text">
+	        <h1>Food Express</h1>
+	        <p>Meals that Wow, Delivered Now!</p>
+	    </div>
+	</div>
+	
+	<div class="explore">
+	    <h2>Explore options</h2>
+	    <div class="explore-options">
+	        <div>
+	            <h3>Order your Food</h3>
+	            <p>Satisfy your cravings with a tap</p>
+	        </div>
+	        <div>
+	            <h3>Popular Cuisines</h3>
+	            <p>Discover flavors you'll love!</p>
+	        </div>
+	        <div>
+	            <h3>Popular Foods</h3>
+	            <p>Taste the most loved dishes!</p>
+	        </div>
+	    </div>
+	</div>
+	
+	<div class="footer">
+	    <div class="column">
+	        <h3>Who we are</h3>
+	        <a href="#">About us</a><br>
+	        <a href="#">Branches</a><br>
+	        <a href="#">Cities we deliver to</a><br>
+	        <a href="#">Contact us</a>
+	    </div>
+	    <div class="column">
+	        <h3>FoodExpress</h3>
+	        <a href="#">Menu</a><br>
+	        <a href="#">Ride with us</a>
+	    </div>
+	    <div class="column">
+	        <h3>Legal</h3>
+	        <a href="#">Terms & Conditions</a><br>
+	        <a href="#">Privacy Policy</a>
+	    </div>
+	    <div class="column">
+	        <h3>Social Links</h3>
+	        <div class="social-links">
+	            <a href="#"><img src="linkedin.png" alt="LinkedIn"></a>
+	            <a href="#"><img src="twitter.png" alt="Twitter"></a>
+	            <a href="#"><img src="instagram.png" alt="Instagram"></a>
+	            <a href="#"><img src="github.png" alt="GitHub"></a>
+	        </div>
+	    </div>
+	</div>
+	
+	<div class="copyright">
+	    Copyright © FoodExpress 2024 All rights reserved
+	</div>
+</body>
+</html>
